@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaysian Tempoyak Fermentation Kinetics Simulator</title>
+    
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for beautiful interactive mathematical graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- KaTeX for gorgeous, publication-ready mathematical equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+    <!-- Google Fonts: Inter & JetBrains Mono for numbers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config for custom agricultural/bioscience palettes -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        durian: {
+                            50: '#fbf9eb',
+                            100: '#f4efcb',
+                            200: '#e9de94',
+                            300: '#dac556',
+                            400: '#cca928',
+                            500: '#b08b1a',
+                            600: '#906913',
+                            700: '#704c12',
+                            800: '#5c3e14',
+                            900: '#4e3315',
+                        },
+                        agro: {
+                            50: '#f0f9f4',
+                            100: '#dcf1e5',
+                            200: '#bbe1cc',
+                            300: '#8ec9aa',
+                            400: '#5fa985',
+                            500: '#3d8c67',
+                            600: '#2e7051',
+                            700: '#265a43',
+                            800: '#204937',
+                            900: '#1c3d2f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigation / Banner -->
+    <header class="bg-gradient-to-r from-agro-900 via-agro-800 to-durian-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-durian-400 p-2.5 rounded-xl shadow-inner text-agro-950">
+                    <!-- Bio-reactor/Flask Leaf Icon -->
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-durian-300">Agro Product Technology (SFP) Courseware</span>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Tempoyak Fermentation Kinetics Simulator</h1>
+                </div>
+            </div>
+            <div class="text-center md:text-right">
+                <div class="bg-white/10 px-3 py-1.5 rounded-lg inline-block border border-white/10 text-xs backdrop-blur-sm">
+                    🎓 <span class="font-medium text-durian-200">Interactive Math Modeling</span> for Malaysian Food Bioscience
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+        
+        <!-- Scenario Introduction & Explanation Card -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 transition-all hover:shadow-md">
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <div class="w-full lg:w-3/5 space-y-4">
+                    <span class="bg-agro-100 text-agro-800 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">The Malaysian Bioscience Scenario</span>
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Modeling Lactic Acid Accumulation in Tempoyak Fermentation</h2>
+                    <p class="text-slate-600 leading-relaxed text-sm md:text-base">
+                        <strong>Tempoyak</strong> is a traditional Malaysian fermented condiment crafted from durian pulp. Lactic Acid Bacteria (LAB), primarily <em>Lactobacillus plantarum</em>, ferment endogenous glucose and sucrose into lactic acid. This process drops the pH below 4.0, preserving the food against pathogens and imparting its characteristic sour aroma.
+                    </p>
+                    <p class="text-slate-600 leading-relaxed text-sm md:text-base">
+                        In industrial **Agro Product Technology (SFP)**, managing this biological system requires knowing not just the *amount* of acid at any time, but the **speed of acidification** (the rate of change). Calculating the mathematical derivative <span class="font-semibold text-emerald-700">\(f'(x)\)</span> allows food scientists to determine the exact moment of peak fermentation, schedule quality-assurance testing, and evaluate optimal batch harvest times.
+                    </p>
+                </div>
+                <div class="w-full lg:w-2/5 bg-durian-50 rounded-xl p-5 border border-durian-100 space-y-3 self-stretch flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-durian-900 text-sm uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                            🔬 Mathematical Kinetics
+                        </h4>
+                        <p class="text-xs text-durian-850 leading-relaxed">
+                            We model the cumulative organic acid accumulation using a <strong>Logistic Growth Function</strong> \(f(x)\). Its instantaneous derivative, \(f'(x)\), maps out the raw velocity of biological conversion (g/L/hour) across a 72-hour cycle.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-durian-200 shadow-sm space-y-1.5">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Target Species:</span>
+                            <span class="font-semibold text-agro-700">L. plantarum (LAB)</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Substrate Matrix:</span>
+                            <span class="font-semibold text-agro-700">D24 / Musang King Pulp</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Product Output:</span>
+                            <span class="font-semibold text-agro-700">Lactic Acid (g/L)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Workspace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Side Controls and Equations Panel -->
+            <div class="lg:col-span-5 flex flex-col gap-6 w-full">
+                
+                <!-- Math Formulations Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <span class="text-indigo-500 font-mono text-xl">f(x)</span> Chemical Calculus Formulas
+                    </h3>
+                    
+                    <!-- LaTeX Equations Display -->
+                    <div class="space-y-4 py-2">
+                        <div>
+                            <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider mb-1">Cumulative Lactic Acid Concentration Curve:</span>
+                            <div class="bg-slate-50 p-3 rounded-lg flex items-center justify-center border border-slate-100 shadow-inner overflow-x-auto">
+                                <span class="text-sm md:text-base font-mono">\[f(x) = \frac{L}{1 + e^{-k(x - x_0)}}\]</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider mb-1">Instantaneous Fermentation Speed (Derivative):</span>
+                            <div class="bg-slate-50 p-3 rounded-lg flex items-center justify-center border border-slate-100 shadow-inner overflow-x-auto">
+                                <span class="text-sm md:text-base font-mono">\[f'(x) = \frac{L \cdot k \cdot e^{-k(x - x_0)}}{(1 + e^{-k(x - x_0)})^2}\]</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parameter Guide/Legend -->
+                    <div class="grid grid-cols-3 gap-2 text-[11px] bg-slate-50/50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-center p-1 bg-white rounded shadow-sm">
+                            <span class="font-bold text-slate-700 block">\(L\)</span>
+                            <span class="text-slate-500">Max Acid Yield (g/L)</span>
+                        </div>
+                        <div class="text-center p-1 bg-white rounded shadow-sm">
+                            <span class="font-bold text-slate-700 block">\(k\)</span>
+                            <span class="text-slate-500">Rate Constant (1/h)</span>
+                        </div>
+                        <div class="text-center p-1 bg-white rounded shadow-sm">
+                            <span class="font-bold text-slate-700 block">\(x_0\)</span>
+                            <span class="text-slate-500">Mid-point (Hours)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Bio-processing Controls Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        ⚙️ Fermentation Bio-processing Controls
+                    </h3>
+                    
+                    <p class="text-xs text-slate-500 leading-relaxed -mt-2">
+                        Adjust these physical fermentation parameters to see how the mathematical function shape and peak rate derivative values adapt in real time.
+                    </p>
+
+                    <!-- Temperature/Inoculum Profiles -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-600 block uppercase tracking-wider">Select Culturing Profile</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="btn-ambient" onclick="applyProfile('ambient')" class="text-xs font-semibold py-2 px-3 rounded-lg border text-agro-700 border-agro-200 bg-agro-50 hover:bg-agro-100 transition-colors focus:ring-2 focus:ring-agro-500">
+                                🌡️ Ambient (30°C)
+                            </button>
+                            <button id="btn-optimized" onclick="applyProfile('optimized')" class="text-xs font-semibold py-2 px-3 rounded-lg border text-durian-700 border-durian-200 bg-durian-50 hover:bg-durian-100 transition-colors focus:ring-2 focus:ring-durian-500">
+                                🚀 Industrial (37°C)
+                            </button>
+                            <button id="btn-slow" onclick="applyProfile('slow')" class="text-xs font-semibold py-2 px-3 rounded-lg border text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 transition-colors focus:ring-2 focus:ring-indigo-500">
+                                ❄️ Chilled (22°C)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Fine-Tuning Sliders -->
+                    <div class="space-y-4 pt-2 border-t border-slate-100">
+                        <!-- L Parameter Slider -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-slate-600">Maximum Lactic Acid Capacity (\(L\)):</span>
+                                <span id="val-L" class="font-mono text-agro-600 font-bold">15.0 g/L</span>
+                            </div>
+                            <input type="range" id="slider-L" min="8" max="25" step="0.5" value="15" oninput="updateKineticsFromSliders()" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-agro-600">
+                            <p class="text-[10px] text-slate-400">Determined by initial sugar content of selected durian variety.</p>
+                        </div>
+
+                        <!-- k Parameter Slider -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-slate-600">Specific Ripening Rate Constant (\(k\)):</span>
+                                <span id="val-k" class="font-mono text-agro-600 font-bold">0.12 /h</span>
+                            </div>
+                            <input type="range" id="slider-k" min="0.05" max="0.30" step="0.01" value="0.12" oninput="updateKineticsFromSliders()" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-agro-600">
+                            <p class="text-[10px] text-slate-400">Reflects temperature and bacterial activity speed.</p>
+                        </div>
+
+                        <!-- x0 Parameter Slider -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-slate-600">Inflection Point (\(x_0\)):</span>
+                                <span id="val-x0" class="font-mono text-agro-600 font-bold">24.0 h</span>
+                            </div>
+                            <input type="range" id="slider-x0" min="10" max="48" step="1.0" value="24" oninput="updateKineticsFromSliders()" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-agro-600">
+                            <p class="text-[10px] text-slate-400">Hour where bacterial culture enters the absolute midpoint of fermentation.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Side Interactive Chart & Visual Analyzer -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Interactive Chart Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                📊 Interactive Mathematical Plot
+                            </h3>
+                            <p class="text-xs text-slate-500">
+                                Click anywhere directly on the graph or hover to analyze biological rates at that hour.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center text-[11px] font-medium text-emerald-600">
+                                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-1.5"></span>
+                                f(x) Acid
+                            </span>
+                            <span class="inline-flex items-center text-[11px] font-medium text-amber-600">
+                                <span class="w-2.5 h-2.5 bg-amber-500 rounded-full mr-1.5"></span>
+                                f'(x) Velocity
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Graph Container -->
+                    <div class="relative min-h-[320px] md:min-h-[400px] w-full flex-grow">
+                        <canvas id="kineticsChart"></canvas>
+                        
+                        <!-- Tap to Click overlay prompt -->
+                        <div class="absolute top-2 right-2 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-semibold tracking-wide py-1 px-2.5 rounded-md pointer-events-none select-none flex items-center gap-1.5">
+                            <span class="animate-ping w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            TAP OR CLICK CHART TO INSPECT
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Interactive Calculator Inspector Panel -->
+                <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-agro-950 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                    
+                    <!-- Decorative back-glow element -->
+                    <div class="absolute -right-24 -bottom-24 w-64 h-64 rounded-full bg-durian-500/10 blur-3xl pointer-events-none"></div>
+                    <div class="absolute -left-24 -top-24 w-64 h-64 rounded-full bg-agro-500/15 blur-3xl pointer-events-none"></div>
+
+                    <div class="relative flex flex-col gap-6">
+                        
+                        <!-- Top State Header -->
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-700 pb-4">
+                            <div>
+                                <h4 class="text-sm font-semibold tracking-wider text-durian-300 uppercase">
+                                    Real-time Bioscience Analyzer
+                                </h4>
+                                <p class="text-xs text-slate-400">
+                                    Derivative inspector and agro-processing feedback engine.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-slate-400">Select Hour:</span>
+                                <input type="number" id="inp-hour" min="0" max="72" step="1" value="24" onchange="updateInpsectorFromInput()" class="bg-slate-800 border border-slate-600 rounded px-2.5 py-1 text-sm font-bold font-mono text-center text-durian-300 w-16 focus:ring-1 focus:ring-durian-400 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Mathematical Calculations Panel -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            <!-- Hour Display Box -->
+                            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                                <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Fermentation Age</span>
+                                <div class="my-2">
+                                    <span id="display-hour" class="text-4xl font-black font-mono text-white">24</span>
+                                    <span class="text-lg font-bold text-slate-400 ml-1">hours</span>
+                                </div>
+                                <span class="text-[11px] text-slate-400">Time elapsed from initial inoculation</span>
+                            </div>
+
+                            <!-- Lactic Acid concentration (f(x)) -->
+                            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Lactic Acid Concentration</span>
+                                    <span class="text-xs font-mono font-bold text-emerald-400">f(x)</span>
+                                </div>
+                                <div class="my-2">
+                                    <span id="display-fx" class="text-4xl font-black font-mono text-emerald-400">7.50</span>
+                                    <span class="text-lg font-bold text-slate-300 ml-1">g/L</span>
+                                </div>
+                                <span class="text-[11px] text-slate-400">Accumulated organic acid mass in pulp</span>
+                            </div>
+
+                            <!-- Conversion Velocity (f'(x)) -->
+                            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Acidification Velocity</span>
+                                    <span class="text-xs font-mono font-bold text-amber-400">f'(x)</span>
+                                </div>
+                                <div class="my-2">
+                                    <span id="display-dfx" class="text-4xl font-black font-mono text-amber-400">0.450</span>
+                                    <span class="text-xs font-bold text-slate-300 ml-1">g/L/hour</span>
+                                </div>
+                                <span class="text-[11px] text-slate-400">Derivative (Instantaneous speed)</span>
+                            </div>
+
+                        </div>
+
+                        <!-- Biological Explanation Box -->
+                        <div class="bg-agro-900/30 p-5 rounded-xl border border-agro-500/20">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-durian-300 mb-1 flex items-center gap-1.5">
+                                🧬 Biological Interpretation & Food Tech Insight
+                            </h5>
+                            <p id="layman-explanation" class="text-sm text-slate-200 leading-relaxed font-light">
+                                Loading dynamic biological breakdown...
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- References and Malaysian Curriculum context block -->
+        <footer class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 mt-4">
+            <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                📖 Academic Context & Malaysian References
+            </h3>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                This kinetic modeling simulator utilizes parameters adapted from local academic analyses of Malaysian durian varieties (e.g., D24, D197 Musang King) during biological preservation. Lactic acid accumulation kinetics is a cornerstone competency for food technologists ensuring food stability and processing quality under Malaysia's National Agrofood Policy.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Relevant Curriculum Topics</h4>
+                    <ul class="text-xs text-slate-600 space-y-1.5 list-inside list-disc">
+                        <li><strong>Bioprocess Engineering</strong>: Substrate conversion kinetics and logistic curves.</li>
+                        <li><strong>Post-Harvest Quality Control</strong>: Food acidity indices, organic acid degradation profiles.</li>
+                        <li><strong>Malaysian Agrofood Sector</strong>: Downstream utilization of excess seasonal durian pulp.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Verified Academic Lit Sources</h4>
+                    <ul class="text-xs text-indigo-600 space-y-1.5 list-inside list-disc">
+                        <li>
+                            <a href="https://ejournal.mardi.gov.my/" target="_blank" class="hover:underline font-semibold">
+                                Journal of Tropical Agriculture and Food Science, MARDI
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.ukm.my/jsm/" target="_blank" class="hover:underline font-semibold">
+                                "Kinetics of organic acids accumulation during Tempoyak fermentation" - Sains Malaysiana (UKM)
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center border-t border-slate-100 pt-6 mt-6 text-xs text-slate-400">
+                Created for Malaysian Undergraduate Agro Product Technology (SFP) Coursework &copy; 2026. Powered by Chart.js & KaTeX.
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Javascript Logical Pipeline -->
+    <script>
+        
+        // Dynamic Mathematical State variables mapping directly to Logistic Growth parameters
+        let param_L = 15.0;   // Maximum Lactic Acid accumulation (g/L)
+        let param_k = 0.12;   // Fermentation rate constant (1/hour)
+        let param_x0 = 24.0;  // Inflection point / peak activity hour (hours)
+        
+        let selectedHour = 24; // Track user interactive inspector hour (0 to 72)
+        let chartInstance = null; // Store Chart.js instance
+
+        // Fermentation profiles matching real agricultural science behaviors
+        const profiles = {
+            ambient: {
+                L: 15.0,
+                k: 0.12,
+                x0: 24.0,
+                title: "Ambient Culturing (30°C)",
+                desc: "Standard ambient conditions for rural Malaysian artisanal processing. Balances preservation safety with active bacterial adaptation times."
+            },
+            optimized: {
+                L: 18.5,
+                k: 0.19,
+                x0: 16.0,
+                title: "Industrial Bioprocessing (37°C)",
+                desc: "Optimized commercial pilot incubator conditions. High-velocity fermentation speeds up the acidification process, preventing undesirable yeast growth."
+            },
+            slow: {
+                L: 12.0,
+                k: 0.07,
+                x0: 38.0,
+                title: "Chilled Fermentation (22°C)",
+                desc: "Controlled low-temperature ripening chamber. Limits acidification pace to yield complex sensory attributes and a softer acidic bite."
+            }
+        };
+
+
+        // Math Equation core f(x) and its derivative f'(x) calculations
+        function calculateFx(x, L, k, x0) {
+            // f(x) = L / (1 + e^(-k*(x - x0)))
+            return L / (1 + Math.exp(-k * (x - x0)));
+        }
+
+        function calculateDfx(x, L, k, x0) {
+            // Analytical derivative: f'(x) = L * k * e^(-k*(x - x0)) / (1 + e^(-k*(x - x0)))^2
+            const expTerm = Math.exp(-k * (x - x0));
+            const denominator = 1 + expTerm;
+            return (L * k * expTerm) / (denominator * denominator);
+        }
+
+
+        // Translates complex derivative values and times into simple agro-industry insights
+        function getLaymanInterpretation(x, fx, dfx, k, x0) {
+            let context = "";
+            let recommendation = "";
+            
+            // Categorize by fermentation physiological phases
+            if (x < x0 - (6 / k)) {
+                // Initial Lag Phase
+                context = "🧪 <strong>LAG PHASE & COLONIZATION:</strong> At this early stage, lactic acid bacteria (LAB) are adapting to the highly viscous, starch-rich durian pulp matrix. The derivative is close to zero, meaning chemical change is extremely slow.";
+                recommendation = "<strong>Industrial Action:</strong> Ensure the initial pH level remains below 5.5 to suppress competitive microflora until the biological acid shield develops.";
+            } 
+            else if (x >= x0 - (6 / k) && x < x0) {
+                // Log/Exponential Acceleration phase
+                context = "⚡ <strong>EXPONENTIAL STARTUP:</strong> Acid accumulation speed is climbing exponentially! The derivative is high, indicating bacteria are rapidly breaking down simple durian sugars into natural organic acids.";
+                recommendation = "<strong>Industrial Action:</strong> Keep anaerobic tanks securely sealed. The exponential rise in respiration velocity creates high carbon dioxide pressure.";
+            } 
+            else if (Math.abs(x - x0) <= 2) {
+                // Peak inflection point
+                context = "🔥 <strong>PEAK FERMENTATION ACTIVITY (INFLECTION POINT):</strong> The derivative \(f'(x)\) is at its absolute maximum. This hour represents the peak metabolic rate. The culture is churning out lactic acid at high velocity.";
+                recommendation = "<strong>Industrial Action:</strong> Critical Quality Testing (QC) window. Sample lactic acid acidity ratios now to verify culture health consistency.";
+            } 
+            else if (x > x0 && x < x0 + (10 / k)) {
+                // Deceleration Phase
+                context = "📉 <strong>DECELERATION PHASE:</strong> Although the total concentration of lactic acid is still increasing, the rate of increase (the derivative) is dropping. Bacteria are running out of sugar, and high acidity is starting to self-inhibit microbial activity.";
+                recommendation = "<strong>Industrial Action:</strong> Monitor visual consistency of pulp. The structural fibers in the durian are softening due to the sustained acid environments.";
+            } 
+            else {
+                // Stationary Stabilization phase
+                context = "🛡️ <strong>BIOLOGICAL STABILITY REACHED:</strong> The derivative is approaching zero, meaning fermentation velocity has flattened. Cumulative acid levels are maximum and stable, making the environment hostile to pathogenic fungi.";
+                recommendation = "<strong>Industrial Action:</strong> Tempoyak is officially fully-aged and ready for sensory classification, vacuum packaging, cold-chain distribution, or direct sale.";
+            }
+
+            return `${context} <br/><br/> <span class="text-durian-300 font-medium">💡 Agro-Process Directive:</span> ${recommendation}`;
+        }
+
+
+        // Master function to render or update the dual-axis chart
+        function renderChart() {
+            const labels = [];
+            const dataFx = [];
+            const dataDfx = [];
+
+            // Populate calculations for 0 to 72 hours
+            for (let h = 0; h <= 72; h++) {
+                labels.push(h);
+                dataFx.push(calculateFx(h, param_L, param_k, param_x0).toFixed(3));
+                dataDfx.push(calculateDfx(h, param_L, param_k, param_x0).toFixed(4));
+            }
+
+            if (chartInstance) {
+                // If chart exists, update dataset values directly for performance
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = dataFx;
+                chartInstance.data.datasets[1].data = dataDfx;
+                chartInstance.update('none'); // silent update without resetting scroll
+                return;
+            }
+
+            const ctx = document.getElementById('kineticsChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Cumulative Lactic Acid f(x) (g/L)',
+                            data: dataFx,
+                            borderColor: '#3d8c67',
+                            backgroundColor: 'rgba(61, 140, 103, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'yCumulative',
+                            pointRadius: 0,
+                            pointHoverRadius: 8,
+                            pointHitRadius: 15
+                        },
+                        {
+                            label: "Production Velocity f'(x) (g/L/h)",
+                            data: dataDfx,
+                            borderColor: '#cca928',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            yAxisID: 'yRate',
+                            pointRadius: 0,
+                            pointHoverRadius: 8,
+                            pointHitRadius: 15
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // We use our own responsive legends
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { size: 13, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            borderRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fermentation Time (Hours)',
+                                font: { size: 12, weight: 'bold' },
+                                color: '#475569'
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        yCumulative: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Lactic Acid f(x) (g/L)',
+                                font: { size: 11, weight: 'bold' },
+                                color: '#3d8c67'
+                            },
+                            min: 0,
+                            max: 30,
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        yRate: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: "Production Speed f'(x) (g/L/hour)",
+                                font: { size: 11, weight: 'bold' },
+                                color: '#cca928'
+                            },
+                            min: 0,
+                            max: 1.5,
+                            grid: {
+                                drawOnChartArea: false // prevent horizontal grid overlaps
+                            }
+                        }
+                    },
+                    onClick: (event, activeElements) => {
+                        // Hook user's click directly on coordinates to update real-time inspector
+                        if (activeElements.length > 0) {
+                            const index = activeElements[0].index;
+                            updateInteractiveInspector(index);
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // Live calculation triggers when sliders are manipulated
+        function updateKineticsFromSliders() {
+            param_L = parseFloat(document.getElementById('slider-L').value);
+            param_k = parseFloat(document.getElementById('slider-k').value);
+            param_x0 = parseFloat(document.getElementById('slider-x0').value);
+
+            // Reflect visually in the control panel labels
+            document.getElementById('val-L').innerText = param_L.toFixed(1) + " g/L";
+            document.getElementById('val-k').innerText = param_k.toFixed(2) + " /h";
+            document.getElementById('val-x0').innerText = param_x0.toFixed(1) + " h";
+
+            // Repopulate coordinates and trigger render engine
+            renderChart();
+            updateInteractiveInspector(selectedHour);
+        }
+
+        // Apply a pre-configured chemical fermentation simulation profile
+        function applyProfile(profileKey) {
+            const profile = profiles[profileKey];
+            if (!profile) return;
+
+            // Update inputs values programmatically
+            document.getElementById('slider-L').value = profile.L;
+            document.getElementById('slider-k').value = profile.k;
+            document.getElementById('slider-x0').value = profile.x0;
+
+            // Sync visual highlights for buttons
+            ['ambient', 'optimized', 'slow'].forEach(key => {
+                const btn = document.getElementById(`btn-${key}`);
+                if (key === profileKey) {
+                    btn.classList.add('ring-2', 'font-extrabold', 'shadow-sm');
+                } else {
+                    btn.classList.remove('ring-2', 'font-extrabold', 'shadow-sm');
+                }
+            });
+
+            updateKineticsFromSliders();
+        }
+
+
+        // Sync user values from mathematical keyboard inputs
+        function updateInpsectorFromInput() {
+            const inputVal = parseInt(document.getElementById('inp-hour').value);
+            if (isNaN(inputVal) || inputVal < 0 || inputVal > 72) return;
+            updateInteractiveInspector(inputVal);
+        }
+
+        // Main core math presentation updates
+        function updateInteractiveInspector(hour) {
+            selectedHour = hour;
+
+            // Bound validation
+            if (selectedHour < 0) selectedHour = 0;
+            if (selectedHour > 72) selectedHour = 72;
+
+            // Recalculate dynamic point values
+            const fx = calculateFx(selectedHour, param_L, param_k, param_x0);
+            const dfx = calculateDfx(selectedHour, param_L, param_k, param_x0);
+
+            // Update HTML values
+            document.getElementById('inp-hour').value = selectedHour;
+            document.getElementById('display-hour').innerText = selectedHour;
+            document.getElementById('display-fx').innerText = fx.toFixed(2);
+            document.getElementById('display-dfx').innerText = dfx.toFixed(3);
+
+            // Refresh analytical translation block
+            const explanation = getLaymanInterpretation(selectedHour, fx, dfx, param_k, param_x0);
+            document.getElementById('layman-explanation').innerHTML = explanation;
+        }
+
+
+        // Trigger on startup load events
+        window.onload = function() {
+            // Apply standard ambient temperature parameters profile on initial load
+            applyProfile('ambient');
+            
+            // Initial inspector population
+            updateInteractiveInspector(24);
+        };
+    </script>
+</body>
+</html>
